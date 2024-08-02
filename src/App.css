@@ -1,0 +1,56 @@
+body {
+  font-family: var(--font-family);
+  margin: 0;
+  padding: 0;
+  background-color: var(--surface-ground);
+  color: var(--text-color);
+}
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-nav {
+  width: 250px;
+  background-color: var(--surface-card);
+  padding: 1rem;
+}
+
+.app-nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.app-nav li {
+  margin-bottom: 0.5rem;
+}
+
+.app-nav a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.app-nav a:hover {
+  color: var(--primary-color);
+}
+
+.app-main {
+  flex: 1;
+  padding: 2rem;
+}
+
+form.p-fluid {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.p-field {
+  margin-bottom: 1rem;
+}
+
+.p-button {
+  margin-right: 0.5rem;
+}
