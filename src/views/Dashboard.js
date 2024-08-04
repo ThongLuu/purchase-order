@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PurchaseOrderTable from '../components/PurchaseOrderTable';
+import { InputText } from 'primereact/inputtext';
+import { Dropdown } from 'primereact/dropdown';
+import { Button } from 'primereact/button';
 
 const Dashboard = () => {
   const [purchaseOrders, setPurchaseOrders] = useState([]);
@@ -46,22 +49,35 @@ const Dashboard = () => {
     setFilteredPurchaseOrders(filtered);
   };
 
+  const filterOptions = [
+    { label: 'Store', value: 'store' },
+    { label: 'Supplier', value: 'supplier' },
+  ];
+
   return (
-    <div>
+    <div className="card">
       <h1>Dashboard</h1>
-      <div>
-        <select name="type" value={filter.type} onChange={handleFilterChange}>
-          <option value="store">Store</option>
-          <option value="supplier">Supplier</option>
-        </select>
-        <input
-          type="text"
-          name="value"
-          value={filter.value}
-          onChange={handleFilterChange}
-          placeholder={`Filter by ${filter.type}`}
-        />
-        <button onClick={applyFilter}>Apply Filter</button>
+      <div className="p-fluid p-formgrid p-grid">
+        <div className="p-field p-col-12 p-md-4">
+          <Dropdown 
+            name="type" 
+            value={filter.type} 
+            options={filterOptions} 
+            onChange={handleFilterChange} 
+            placeholder="Select filter type"
+          />
+        </div>
+        <div className="p-field p-col-12 p-md-4">
+          <InputText
+            name="value"
+            value={filter.value}
+            onChange={handleFilterChange}
+            placeholder={`Filter by ${filter.type}`}
+          />
+        </div>
+        <div className="p-field p-col-12 p-md-4">
+          <Button label="Apply Filter" onClick={applyFilter} className="p-button-outlined" />
+        </div>
       </div>
       <PurchaseOrderTable purchaseOrders={filteredPurchaseOrders} />
     </div>

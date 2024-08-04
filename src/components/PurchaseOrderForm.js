@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import { InputText } from 'primereact/inputtext';
 import { Calendar } from 'primereact/calendar';
@@ -6,6 +6,7 @@ import { Button } from 'primereact/button';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { FileUpload } from 'primereact/fileupload';
+import { Message } from 'primereact/message';
 
 const PurchaseOrderForm = () => {
   const [purchaseOrder, setPurchaseOrder] = useState({
@@ -16,6 +17,8 @@ const PurchaseOrderForm = () => {
     createdDate: null,
     expectedDeliveryDate: null,
   });
+  const [uploadStatus, setUploadStatus] = useState(null);
+  const fileUploadRef = useRef(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -37,20 +40,28 @@ const PurchaseOrderForm = () => {
     const file = event.files[0];
     const reader = new FileReader();
     reader.onload = (evt) => {
-      const bstr = evt.target.result;
-      const wb = XLSX.read(bstr, { type: 'binary' });
-      const wsname = wb.SheetNames[0];
-      const ws = wb.Sheets[wsname];
-      const data = XLSX.utils.sheet_to_json(ws);
-      
-      // Assuming the Excel sheet has columns: SKU, ProductName, Quantity, Supplier, ExpectedDeliveryDate
-      const newPurchaseOrder = {
-        ...purchaseOrder,
-        skus: data.map(row => ({ sku: row.SKU, productName: row.ProductName, quantity: row.Quantity })),
-        supplier: data[0].Supplier,
-        expectedDeliveryDate: new Date(data[0].ExpectedDeliveryDate),
-      };
-      setPurchaseOrder(newPurchaseOrder);
+      try {
+        const bstr = evt.target.result;
+        const wb = XLSX.read(bstr, { type: 'binary' });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const data = XLSX.utils.sheet_to_json(ws);
+        
+        console.log('Parsed Excel data:', data);
+        
+        // Assuming the Excel sheet has columns: SKU, ProductName, Quantity, Supplier, ExpectedDeliveryDate
+        const newPurchaseOrder = {
+          ...purchaseOrder,
+          skus: data.map(row => ({ sku: row.SKU, productName: row.ProductName, quantity: row.Quantity })),
+          supplier: data[0].Supplier,
+          expectedDeliveryDate: new Date(data[0].ExpectedDeliveryDate),
+        };
+        setPurchaseOrder(newPurchaseOrder);
+        setUploadStatus('success');
+      } catch (error) {
+        console.error('Error processing Excel file:', error);
+        setUploadStatus('error');
+      }
     };
     reader.readAsBinaryString(file);
   };
@@ -105,7 +116,9 @@ const PurchaseOrderForm = () => {
 
       <div className="p-field">
         <label htmlFor="fileUpload">Upload Excel</label>
-        <FileUpload mode="basic" name="fileUpload" accept=".xlsx, .xls" maxFileSize={1000000} onUpload={handleFileUpload} />
+        <FileUpload ref={fileUploadRef} mode="basic" name="fileUpload" accept=".xlsx, .xls" maxFileSize={1000000} auto customUpload uploadHandler={handleFileUpload} chooseLabel="Choose Excel File" />
+        {uploadStatus === 'success' && <Message severity="success" text="File uploaded and data loaded successfully" />}
+        {uploadStatus === 'error' && <Message severity="error" text="Error processing the Excel file" />}
       </div>
 
       <Button label="Scan QR Code" icon="pi pi-qrcode" onClick={handleQRScan} className="p-button-secondary" />
