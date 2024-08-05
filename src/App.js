@@ -19,7 +19,6 @@ function App() {
         <nav className="app-nav">
           <ul>
             <li><Link to="/">Dashboard</Link></li>
-            <li><Link to="/create">Create Purchase Order</Link></li>
             <li><Link to="/list">Purchase Order List</Link></li>
             <li><Link to="/review">Review Purchase Orders</Link></li>
             <li><Link to="/users">User Management</Link></li>

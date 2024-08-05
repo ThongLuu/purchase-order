@@ -49,24 +49,21 @@ const PurchaseOrderList = () => {
     return rowData.createdDate.toLocaleDateString();
   };
 
+  const handleCreatePurchaseOrder = () => {
+    navigate('/create');
+  };
+
   return (
     <div>
       <h2>Purchase Order List</h2>
-      <div className="p-grid p-fluid">
-        <div className="p-col-3">
-          <InputText placeholder="Filter by SKU" name="sku" value={filters.sku} onChange={handleFilterChange} />
-        </div>
-        <div className="p-col-3">
-          <InputText placeholder="Filter by Product Name" name="productName" value={filters.productName} onChange={handleFilterChange} />
-        </div>
-        <div className="p-col-3">
-          <InputText placeholder="Filter by Store" name="store" value={filters.store} onChange={handleFilterChange} />
-        </div>
-        <div className="p-col-3">
-          <Calendar placeholder="Filter by Created Date" name="createdDate" value={filters.createdDate} onChange={handleFilterChange} />
-        </div>
+      <Button label="Create Purchase Order" icon="pi pi-plus" onClick={handleCreatePurchaseOrder} className="p-button-primary" style={{ marginBottom: '20px' }} />
+      <div className="p-grid p-fluid" style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+        <InputText placeholder="Filter by SKU" name="sku" value={filters.sku} onChange={handleFilterChange} style={{ flex: 1 }} />
+        <InputText placeholder="Filter by Product Name" name="productName" value={filters.productName} onChange={handleFilterChange} style={{ flex: 1 }} />
+        <InputText placeholder="Filter by Store" name="store" value={filters.store} onChange={handleFilterChange} style={{ flex: 1 }} />
+        <Calendar placeholder="Filter by Created Date" name="createdDate" value={filters.createdDate} onChange={handleFilterChange} style={{ flex: 1 }} />
       </div>
-      <DataTable value={filteredPurchaseOrders} onRowClick={handleRowClick} style={{ marginTop: '20px' }}>
+      <DataTable value={filteredPurchaseOrders} onRowClick={handleRowClick}>
         <Column field="id" header="ID" />
         <Column field="sku" header="SKU" />
         <Column field="productName" header="Product Name" />
