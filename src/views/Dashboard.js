@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PurchaseOrderTable from '../components/PurchaseOrderTable';
-import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
-import { MultiSelect } from 'primereact/multiselect';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
@@ -12,7 +10,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 const Dashboard = () => {
   const [purchaseOrders, setPurchaseOrders] = useState([]);
   const [filteredPurchaseOrders, setFilteredPurchaseOrders] = useState([]);
-  const [filters, setFilters] = useState({ store: '', supplier: '', creator: '', approver: '', status: [] });
+  const [filters, setFilters] = useState({ store: '', supplier: '' });
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
   const [chartView, setChartView] = useState('store'); // 'store' or 'supplier'
@@ -77,11 +75,8 @@ const Dashboard = () => {
 
   const applyFilters = () => {
     const filtered = purchaseOrders.filter(po => 
-      (filters.store === '' || po.store.toLowerCase().includes(filters.store.toLowerCase())) &&
-      (filters.supplier === '' || po.supplier.toLowerCase().includes(filters.supplier.toLowerCase())) &&
-      (filters.creator === '' || po.creator.toLowerCase().includes(filters.creator.toLowerCase())) &&
-      (filters.approver === '' || po.approver.toLowerCase().includes(filters.approver.toLowerCase())) &&
-      (filters.status.length === 0 || filters.status.includes(po.status))
+      (filters.store === '' || filters.store === 'All' || po.store === filters.store) &&
+      (filters.supplier === '' || filters.supplier === 'All' || po.supplier === filters.supplier)
     );
     setFilteredPurchaseOrders(filtered);
     updateTotalQuantity(filtered);
@@ -94,13 +89,8 @@ const Dashboard = () => {
     updateChartData(filteredPurchaseOrders);
   };
 
-  const statusOptions = [
-    { label: 'Pending', value: 'Pending' },
-    { label: 'Approved', value: 'Approved' },
-    { label: 'Shipped', value: 'Shipped' },
-    { label: 'Delivered', value: 'Delivered' },
-    { label: 'Cancelled', value: 'Cancelled' }
-  ];
+  const storeOptions = [{ label: 'All', value: 'All' }, ...['Store 1', 'Store 2', 'Store 3', 'Store 4', 'Store 5'].map(store => ({ label: store, value: store }))];
+  const supplierOptions = [{ label: 'All', value: 'All' }, ...['Supplier A', 'Supplier B', 'Supplier C', 'Supplier D', 'Supplier E'].map(supplier => ({ label: supplier, value: supplier }))];
 
   const chartOptions = {
     responsive: true,
@@ -128,11 +118,8 @@ const Dashboard = () => {
       <div className="p-fluid p-formgrid p-grid">
         <div className="p-field p-col-12">
           <div className="p-inputgroup">
-            <InputText name="store" value={filters.store} onChange={handleFilterChange} placeholder="Store" />
-            <InputText name="supplier" value={filters.supplier} onChange={handleFilterChange} placeholder="Supplier" />
-            <InputText name="creator" value={filters.creator} onChange={handleFilterChange} placeholder="Creator" />
-            <InputText name="approver" value={filters.approver} onChange={handleFilterChange} placeholder="Approver" />
-            <MultiSelect name="status" value={filters.status} options={statusOptions} onChange={handleFilterChange} placeholder="Status" />
+            <Dropdown name="store" value={filters.store} options={storeOptions} onChange={handleFilterChange} placeholder="Select Store" />
+            <Dropdown name="supplier" value={filters.supplier} options={supplierOptions} onChange={handleFilterChange} placeholder="Select Supplier" />
             <Button label="Apply Filters" onClick={applyFilters} className="p-button-outlined" />
           </div>
         </div>
