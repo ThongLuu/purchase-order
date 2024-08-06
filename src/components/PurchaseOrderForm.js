@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { InputText } from "primereact/inputtext";
@@ -9,20 +9,68 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { FileUpload } from "primereact/fileupload";
 import { Message } from "primereact/message";
+import { Dropdown } from "primereact/dropdown";
 import { v4 as uuidv4 } from "uuid";
 
 const PurchaseOrderForm = () => {
   const navigate = useNavigate();
   const [purchaseOrder, setPurchaseOrder] = useState({
     skus: [],
-    creator: "",
-    approver: "",
-    supplier: "",
+    creator: null,
+    approver: null,
+    supplier: null,
     createdDate: null,
     expectedDeliveryDate: null,
   });
   const [uploadStatus, setUploadStatus] = useState(null);
   const fileUploadRef = useRef(null);
+
+  // Mock data for dropdowns
+  const [creators, setCreators] = useState([]);
+  const [approvers, setApprovers] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
+
+  useEffect(() => {
+    // Generate more mock data
+    setCreators([
+      { name: 'John Doe', code: 'JD' },
+      { name: 'Jane Smith', code: 'JS' },
+      { name: 'Bob Johnson', code: 'BJ' },
+      { name: 'Alice Williams', code: 'AW' },
+      { name: 'Charlie Brown', code: 'CB' },
+      { name: 'Diana Clark', code: 'DC' },
+      { name: 'Edward Davis', code: 'ED' },
+      { name: 'Fiona Evans', code: 'FE' },
+      { name: 'George Foster', code: 'GF' },
+      { name: 'Helen Green', code: 'HG' },
+    ]);
+
+    setApprovers([
+      { name: 'Michael Scott', code: 'MS' },
+      { name: 'Pam Beesly', code: 'PB' },
+      { name: 'Jim Halpert', code: 'JH' },
+      { name: 'Dwight Schrute', code: 'DS' },
+      { name: 'Angela Martin', code: 'AM' },
+      { name: 'Oscar Martinez', code: 'OM' },
+      { name: 'Kevin Malone', code: 'KM' },
+      { name: 'Stanley Hudson', code: 'SH' },
+      { name: 'Phyllis Vance', code: 'PV' },
+      { name: 'Toby Flenderson', code: 'TF' },
+    ]);
+
+    setSuppliers([
+      { name: 'Acme Corp', code: 'AC' },
+      { name: 'Global Supplies', code: 'GS' },
+      { name: 'Tech Innovations', code: 'TI' },
+      { name: 'Dunder Mifflin', code: 'DM' },
+      { name: 'Stark Industries', code: 'SI' },
+      { name: 'Wayne Enterprises', code: 'WE' },
+      { name: 'Umbrella Corporation', code: 'UC' },
+      { name: 'Cyberdyne Systems', code: 'CS' },
+      { name: 'Oscorp Industries', code: 'OI' },
+      { name: 'Initech', code: 'IN' },
+    ]);
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -153,33 +201,42 @@ const PurchaseOrderForm = () => {
 
       <div className="p-field">
         <label htmlFor="creator">Creator</label>
-        <InputText
+        <Dropdown
           id="creator"
           name="creator"
           value={purchaseOrder.creator}
+          options={creators}
           onChange={handleInputChange}
+          optionLabel="name"
+          placeholder="Select a Creator"
           required
         />
       </div>
 
       <div className="p-field">
         <label htmlFor="approver">Approver</label>
-        <InputText
+        <Dropdown
           id="approver"
           name="approver"
           value={purchaseOrder.approver}
+          options={approvers}
           onChange={handleInputChange}
+          optionLabel="name"
+          placeholder="Select an Approver"
           required
         />
       </div>
 
       <div className="p-field">
         <label htmlFor="supplier">Supplier</label>
-        <InputText
+        <Dropdown
           id="supplier"
           name="supplier"
           value={purchaseOrder.supplier}
+          options={suppliers}
           onChange={handleInputChange}
+          optionLabel="name"
+          placeholder="Select a Supplier"
           required
         />
       </div>
