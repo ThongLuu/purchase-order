@@ -10,6 +10,7 @@ import { Column } from "primereact/column";
 import { FileUpload } from "primereact/fileupload";
 import { Message } from "primereact/message";
 import { Dropdown } from "primereact/dropdown";
+import { AutoComplete } from "primereact/autocomplete";
 import { v4 as uuidv4 } from "uuid";
 
 const PurchaseOrderForm = () => {
@@ -29,6 +30,10 @@ const PurchaseOrderForm = () => {
   const [creators, setCreators] = useState([]);
   const [approvers, setApprovers] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
+
+  // Mock data for product suggestions
+  const [productSuggestions, setProductSuggestions] = useState([]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
 
   useEffect(() => {
     // Generate more mock data
@@ -70,6 +75,20 @@ const PurchaseOrderForm = () => {
       { name: 'Oscorp Industries', code: 'OI' },
       { name: 'Initech', code: 'IN' },
     ]);
+
+    // Set mock data for product suggestions
+    setProductSuggestions([
+      { name: 'Laptop', sku: 'LAP001' },
+      { name: 'Desktop Computer', sku: 'DSK001' },
+      { name: 'Monitor', sku: 'MON001' },
+      { name: 'Keyboard', sku: 'KBD001' },
+      { name: 'Mouse', sku: 'MOU001' },
+      { name: 'Printer', sku: 'PRT001' },
+      { name: 'Smartphone', sku: 'PHN001' },
+      { name: 'Tablet', sku: 'TAB001' },
+      { name: 'Headphones', sku: 'HDP001' },
+      { name: 'External Hard Drive', sku: 'HDD001' },
+    ]);
   }, []);
 
   const handleInputChange = (e) => {
@@ -79,7 +98,16 @@ const PurchaseOrderForm = () => {
 
   const handleSkuChange = (index, field, value) => {
     const updatedSkus = [...purchaseOrder.skus];
-    updatedSkus[index][field] = value;
+    if (field === "productName") {
+      if (typeof value === 'object' && value !== null) {
+        updatedSkus[index].productName = value.name;
+        updatedSkus[index].sku = value.sku;
+      } else {
+        updatedSkus[index].productName = value;
+      }
+    } else {
+      updatedSkus[index][field] = value;
+    }
     if (field === "sku") {
       setTimeout(
         () => setPurchaseOrder({ ...purchaseOrder, skus: updatedSkus }),
@@ -94,7 +122,7 @@ const PurchaseOrderForm = () => {
       ...purchaseOrder,
       skus: [
         ...purchaseOrder.skus,
-        { id: uuidv4(), sku: "", productName: "", quantity: 0 },
+        { id: uuidv4(), sku: "", productName: "", quantity: 1 },
       ],
     });
   };
@@ -173,10 +201,22 @@ const PurchaseOrderForm = () => {
     />
   );
 
+  const searchProducts = (event) => {
+    const query = event.query.toLowerCase();
+    const filtered = productSuggestions.filter(
+      (product) => product.name.toLowerCase().indexOf(query) !== -1
+    );
+    setFilteredSuggestions(filtered);
+  };
+
   const productNameTemplate = (rowData, { rowIndex }) => (
-    <InputText
+    <AutoComplete
       value={rowData.productName}
-      onChange={(e) => handleSkuChange(rowIndex, "productName", e.target.value)}
+      suggestions={filteredSuggestions}
+      completeMethod={searchProducts}
+      field="name"
+      dropdown
+      onChange={(e) => handleSkuChange(rowIndex, "productName", e.value)}
     />
   );
 
