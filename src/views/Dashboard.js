@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PurchaseOrderTable from '../components/PurchaseOrderTable';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
@@ -15,35 +15,7 @@ const Dashboard = () => {
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
   const [chartView, setChartView] = useState('store'); // 'store' or 'supplier'
 
-  useEffect(() => {
-    // Generate more mock data
-    const mockPurchaseOrders = Array.from({ length: 50 }, (_, index) => ({
-      id: index + 1,
-      skus: [
-        { sku: `SKU${(index * 2 + 1).toString().padStart(3, '0')}`, quantity: Math.floor(Math.random() * 100) + 1 },
-        { sku: `SKU${(index * 2 + 2).toString().padStart(3, '0')}`, quantity: Math.floor(Math.random() * 100) + 1 }
-      ],
-      creator: ['John Doe', 'Alice Johnson', 'Bob Williams', 'Emma Davis', 'Michael Brown'][Math.floor(Math.random() * 5)],
-      approver: ['Jane Smith', 'Charlie Wilson', 'Diana Miller', 'Frank Thomas', 'Grace Lee'][Math.floor(Math.random() * 5)],
-      supplier: ['Supplier A', 'Supplier B', 'Supplier C', 'Supplier D', 'Supplier E'][Math.floor(Math.random() * 5)],
-      store: ['Store 1', 'Store 2', 'Store 3', 'Store 4', 'Store 5'][Math.floor(Math.random() * 5)],
-      createdDate: new Date(2023, 4, Math.floor(Math.random() * 30) + 1).toISOString().split('T')[0],
-      expectedDeliveryDate: new Date(2023, 5, Math.floor(Math.random() * 30) + 1).toISOString().split('T')[0],
-      status: ['Pending', 'Approved', 'Shipped', 'Delivered', 'Cancelled'][Math.floor(Math.random() * 5)],
-    }));
-    setPurchaseOrders(mockPurchaseOrders);
-    setFilteredPurchaseOrders(mockPurchaseOrders);
-    updateTotalQuantity(mockPurchaseOrders);
-    updateChartData(mockPurchaseOrders);
-  }, []);
-
-  const updateTotalQuantity = (orders) => {
-    const total = orders.reduce((sum, order) => 
-      sum + order.skus.reduce((skuSum, sku) => skuSum + sku.quantity, 0), 0);
-    setTotalQuantity(total);
-  };
-
-  const updateChartData = (orders) => {
+  const updateChartData = useCallback((orders) => {
     const quantities = {};
     orders.forEach(po => {
       const key = chartView === 'store' ? po.store : po.supplier;
@@ -66,6 +38,34 @@ const Dashboard = () => {
         },
       ],
     });
+  }, [chartView]);
+
+  useEffect(() => {
+    // Generate more mock data
+    const mockPurchaseOrders = Array.from({ length: 50 }, (_, index) => ({
+      id: index + 1,
+      skus: [
+        { sku: `SKU${(index * 2 + 1).toString().padStart(3, '0')}`, quantity: Math.floor(Math.random() * 100) + 1 },
+        { sku: `SKU${(index * 2 + 2).toString().padStart(3, '0')}`, quantity: Math.floor(Math.random() * 100) + 1 }
+      ],
+      creator: ['John Doe', 'Alice Johnson', 'Bob Williams', 'Emma Davis', 'Michael Brown'][Math.floor(Math.random() * 5)],
+      approver: ['Jane Smith', 'Charlie Wilson', 'Diana Miller', 'Frank Thomas', 'Grace Lee'][Math.floor(Math.random() * 5)],
+      supplier: ['Supplier A', 'Supplier B', 'Supplier C', 'Supplier D', 'Supplier E'][Math.floor(Math.random() * 5)],
+      store: ['Store 1', 'Store 2', 'Store 3', 'Store 4', 'Store 5'][Math.floor(Math.random() * 5)],
+      createdDate: new Date(2023, 4, Math.floor(Math.random() * 30) + 1).toISOString().split('T')[0],
+      expectedDeliveryDate: new Date(2023, 5, Math.floor(Math.random() * 30) + 1).toISOString().split('T')[0],
+      status: ['Pending', 'Approved', 'Shipped', 'Delivered', 'Cancelled'][Math.floor(Math.random() * 5)],
+    }));
+    setPurchaseOrders(mockPurchaseOrders);
+    setFilteredPurchaseOrders(mockPurchaseOrders);
+    updateTotalQuantity(mockPurchaseOrders);
+    updateChartData(mockPurchaseOrders);
+  }, [updateChartData]);
+
+  const updateTotalQuantity = (orders) => {
+    const total = orders.reduce((sum, order) => 
+      sum + order.skus.reduce((skuSum, sku) => skuSum + sku.quantity, 0), 0);
+    setTotalQuantity(total);
   };
 
   const handleFilterChange = (e) => {

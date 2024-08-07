@@ -3,9 +3,8 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 
 const Loading = () => {
   return (
-    <div className="loading-container">
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
       <ProgressSpinner />
-      <p>Loading...</p>
     </div>
   );
 };
