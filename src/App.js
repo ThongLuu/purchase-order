@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import AppContent from './components/AppContent';
 import Loading from './components/Loading';
 
+import 'primereact/resources/primereact.min.css';
 import './App.css';
 
 const Dashboard = lazy(() => import('./views/Dashboard'));
